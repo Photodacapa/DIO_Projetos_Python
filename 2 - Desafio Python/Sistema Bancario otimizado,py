@@ -1,0 +1,151 @@
+#Sistema bancario simples com as funcionalidades de sacar, depositar e Extrato
+
+nome_banco = "Banco Manu Digital"
+saldo = 0                                                          # saldo inicial será 0 até que seja feito um deposito
+limite = 500                                                       # valor máximo de saque permitido
+numero_saque = 3                                                   # número máximo de saques permitidos
+acao_saque = 0                                                     # contador de saques realizados
+extrato = ""   
+quantidade_deposito = 0                                            #contador de depositos realizados
+total_deposito = 0                                                 #valor total de depositos
+
+novo_cliente = []
+contas = []
+agencia = "0001"
+numero_conta = 0
+
+menu_de_transacao = f"""
+====================Escolha uma opção=======================
+[1] - Sacar 
+[2] - Depositar 
+[3] - Extrato
+[4] - Cadastrar novo cliente
+[5] - Cadastrar nova conta corrente
+[6] - Sair
+============================================================  
+"""
+
+def sacar(*, saldo, extrato, acao_saque, limite, numero_saque, saque):
+    saldo_maximo = saque > saldo 
+    limite_maximo = saque > limite
+    limite_saques = acao_saque >= numero_saque
+       
+    if saldo_maximo:
+         print("\nFalha na transação! Saldo insuficiente") 
+
+    elif limite_maximo:
+         print("\nFalha na transação!O valor de saque excede o limite diário.")
+        
+    elif limite_saques:
+         print("\nFalha na transação! você atingiu o limite de saques diário.")
+        
+    elif saque > 0:
+         saldo -= saque
+         acao_saque += 1
+         extrato += f"Saque: R$ {saque:.2f}\n"
+         print(f"\nO seu saque no valor de R$ {saque:.2f} foi realizado com sucesso.")   
+
+    else:
+         print("\nO valor de saque não pode ser menor ou igual a 0")  
+       
+    return saldo , extrato, acao_saque 
+
+def depositar(saldo, valor_deposito , extrato, quantidade_deposito, total_deposito, / ):
+   # Verificação das condições para deposito 
+   if valor_deposito > 0:
+        quantidade_deposito += 1
+        saldo += valor_deposito
+        total_deposito += valor_deposito
+        extrato += f"Depósito: R$ {valor_deposito:.2f}\n"
+        print(f"\nO seu deposito no valor de R$ {valor_deposito:.2f} foi realizado com sucesso.")
+   else:
+        print("\nFalha no seu deposito, revise o valor informado.")
+   return saldo, extrato,quantidade_deposito,total_deposito    
+
+def exibir_extrato(saldo,/,*,extrato):
+    print("====================Extrato Simplificado======================= ")
+    print("Não foram identificadas movimentações em sua conta." if not extrato else extrato)          
+    mensagem_final=(f"Quantidade total de saque: {acao_saque} \nTotal de depositos: {quantidade_deposito} \nValor total depositado: R${total_deposito:.2f}")   
+    mensagem_sem_espaco=mensagem_final.strip()      
+    print(f"{mensagem_sem_espaco}")
+    print("================================================================")
+    print(f"\nSaldo total: R$ {saldo:.2f}")
+    
+def cadastro_cliente(novo_cliente):
+    cpf = input("Informe o CPF(somente números): ")
+    cliente = filtrar_cliente(cpf, novo_cliente)
+
+    if cliente:
+        print("\nO CPF informado já está cadastrado!")
+        return
+    nome_cliente = input("Digite o nome completo: ") 
+    data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ")         
+    print("Informe o endereço completo (Rua,nro, bairro, cidade/sigla do estado: )")
+    print("Ex: Rua Aloandia,262, Jardim Nordeste, SP/SP")
+    endereco = input() 
+
+    novo_cliente.append({"nome_cliente": nome_cliente, "data_nascimento": data_nascimento, "cpf": cpf, "endereço": endereco})
+    print("\nCadastro realizado com sucesso")
+
+def filtrar_cliente(cpf, novo_cliente):
+    cliente_filtrado = [cliente for cliente in novo_cliente if cliente["cpf"] == cpf]
+    return cliente_filtrado[0] if cliente_filtrado else None
+
+def cadastrar_conta(agencia, numero_conta, novo_cliente):
+    cpf = input("Digite o CPF do cliente: ")
+    cliente= filtrar_cliente(cpf, novo_cliente)
+
+    if cliente:
+        print("Conta corrente cadastrada com sucesso")
+        return {"agencia": agencia, "numero_conta": numero_conta, "novo_cliente": novo_cliente}
+            
+    else:
+        print("\nCadastro não encontrado, por favor tente novamente")
+
+
+
+
+
+while True:
+    print("") 
+    print(nome_banco.center(65))                                   #apresenta o nome do banco centralizado
+    opcao = int(input(menu_de_transacao))
+
+    if opcao == 1:         
+       saque = float(input("Digite o valor que deseja sacar:"))
+
+       saldo , extrato, acao_saque = sacar(
+           saldo = saldo,
+           saque = saque,
+           extrato = extrato,
+           limite = limite,
+           acao_saque = acao_saque,
+           numero_saque = numero_saque,
+       )
+  
+    elif opcao == 2:
+       valor_deposito = float(input("\nDigite o valor que deseja depositar: "))
+       
+       #chamando a função depositar 
+       saldo, extrato,quantidade_deposito,total_deposito = depositar(saldo, valor_deposito ,extrato,quantidade_deposito,total_deposito)
+         
+       
+
+    elif opcao == 3:
+        exibir_extrato(saldo, extrato=extrato)
+    
+    # Opcional: sair do loop após a escolha do cliente
+    elif opcao == 4:
+        cadastro_cliente(novo_cliente)
+
+    elif opcao == 5:
+       numero_conta = len(contas) + 1
+       conta = cadastrar_conta(agencia, numero_conta, novo_cliente)
+       
+       if conta:
+           contas.append(conta)                    
+
+    elif opcao == 6:
+       print("\nObrigado(a) por usar os nossos serviços.")   
+       break        
+          
