@@ -1,4 +1,4 @@
-#Sistema bancario simples com as funcionalidades de sacar, depositar e Extrato
+#Sistema bancario com as funcionalidades de sacar, depositar, Extrato, criar nova conta corrente e cadastrar novo cliente
 
 nome_banco = "Banco Manu Digital"
 saldo = 0                                                          # saldo inicial será 0 até que seja feito um deposito
